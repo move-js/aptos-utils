@@ -6,6 +6,7 @@ const clear = require('clear');
 const figlet = require('figlet');
 const path = require('path');
 const program = require('commander');
+import * as fs from 'fs';
 
 import { deployMoonCoin, fundAccount, initializeCoin } from './txs';
 import { private_key, rest_url, faucet_url } from '../aptos.json';
@@ -32,8 +33,19 @@ program
  */
 program.command('init')
   .description('Initial config file')
-  .action(() => {
-    console.log("a");
+  .option('-N, --network <name>', 'Network')
+  .action(async (str: { network: string }) => {
+    const sharedAddressPath = `${process.cwd()}/aptos.json`;
+    // @ts-ignore
+    const info = JSON.parse(await fs.readFileSync(sharedAddressPath));
+
+    const account = new AptosAccount();
+    const key = account.toPrivateKeyObject();
+    info.private_key = key.privateKeyHex;
+    info.rest_url = str.network === 'devnet' ? REST_URL : null;
+    info.faucet_url = str.network === 'devnet' ? FAUCET_URL : null;
+    await fs.writeFileSync(sharedAddressPath, JSON.stringify(info, null, 2));
+    console.log(`Initialized account. ☼☽`);
   });
 
 /**
