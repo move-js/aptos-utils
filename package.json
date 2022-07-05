@@ -19,6 +19,7 @@
     "npm:upgrade": "npx npm-check-updates -iu",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
     "start": "ts-node src/index.ts",
+    "s": "ts-node src/txs.ts",
     "test": "sudo npm i -g && aptos-utils"
   },
   "dependencies": {
