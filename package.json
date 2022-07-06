@@ -1,12 +1,12 @@
 {
   "name": "@movejs/aptos-utils",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "CLI for aptos-utils",
   "license": "MIT",
   "author": "sondotpin",
-  "main": "./lib/src/index.js",
+  "main": "./lib/index.js",
   "bin": {
-    "aptos-utils": "./lib/src/index.js"
+    "aptos-utils": "./lib/index.js"
   },
   "scripts": {
     "audit": "lerna run audit --stream",
