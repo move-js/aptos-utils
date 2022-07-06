@@ -4,23 +4,22 @@
   "description": "CLI for aptos-utils",
   "license": "MIT",
   "author": "sondotpin",
-  "main": "./lib/index.js",
+  "main": "./lib/src/index.js",
   "bin": {
-    "aptos-utils": "./lib/index.js"
+    "aptos-utils": "./lib/src/index.js"
   },
   "scripts": {
     "audit": "lerna run audit --stream",
     "prepublishOnly": "yarn build",
     "audit:depcheck": "lerna run audit:depcheck --stream",
     "audit:npm-check-updates": "npx npm-check-updates --errorLevel 1",
-    "build": "tsc -p .",
+    "build": "rm -rf lib && tsc -p .",
     "create": "npm run build && npm run test",
-    "local": "sudo npm uninstall -g && sudo npm install -g && aptos-utils",
+    "local": "sudo npm uninstall -g && sudo npm install -g",
     "npm:format": "npx prettier-package-json --write package.json",
     "npm:upgrade": "npx npm-check-updates -iu",
     "refresh": "rm -rf ./node_modules ./package-lock.json && npm install",
     "start": "ts-node src/index.ts",
-    "s": "ts-node src/txs.ts",
     "test": "sudo npm i -g && aptos-utils"
   },
   "dependencies": {

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-const packageInfo = require('../package.json');
 const chalk = require('chalk');
 const clear = require('clear');
 const figlet = require('figlet');
@@ -24,9 +23,9 @@ console.log(
 );
 
 program
-  .name(packageInfo.name)
-  .version(packageInfo.version)
-  .description(packageInfo.description);
+  .name('aptos-utils')
+  .version('0.0.1')
+  .description('CLI for aptos-utils');
 
 /**
  * Need to write a .config.json file at root, store private key
@@ -35,6 +34,11 @@ program.command('init')
   .description('Initial config file')
   .option('-N, --network <name>', 'Network')
   .action(async (str: { network: string }) => {
+    await fs.writeFileSync(`${process.cwd()}/aptos.json`, JSON.stringify({
+      private_key: "",
+      rest_url: "",
+      faucet_url: ""
+    }));
     const sharedAddressPath = `${process.cwd()}/aptos.json`;
     // @ts-ignore
     const info = JSON.parse(await fs.readFileSync(sharedAddressPath));
