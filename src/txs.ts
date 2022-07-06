@@ -40,5 +40,40 @@ export const initializeCoin = async (client: AptosClient, account: AptosAccount,
   const txnRequest = await client.generateTransaction(account.address(), payload);
   const signedTxn = await client.signTransaction(account, txnRequest);
   const transactionRes = await client.submitTransaction(signedTxn);
+  console.log(transactionRes)
   return await client.waitForTransaction(transactionRes.hash);
 };
+
+export const register = async (client: AptosClient, account: AptosAccount,  coinAddress: string): Promise<void> => {
+  let payload: Types.TransactionPayload = {
+    type: "script_function_payload",
+    function: `0x1::Coin::register`,
+    type_arguments: [`0x${coinAddress}::MoonCoin::MoonCoin`],
+    arguments: [],
+  };
+  console.log(payload);
+  
+  const txnRequest = await client.generateTransaction(account.address(), payload);
+  const signedTxn = await client.signTransaction(account, txnRequest);
+  const transactionRes = await client.submitTransaction(signedTxn);
+  return await client.waitForTransaction(transactionRes.hash);
+};
+
+export const mint = async (client: AptosClient, account: AptosAccount,  coinAddress: string, receiverAddress: string, amount: number): Promise<void> => {
+
+  let payload: Types.TransactionPayload = {
+    type: "script_function_payload",
+    function: `0x1::ManagedCoin::mint`,
+    type_arguments: [`0x${coinAddress}::MoonCoin::MoonCoin`],
+    arguments: [receiverAddress, amount.toString()],
+  };
+  console.log(payload);
+  
+  const txnRequest = await client.generateTransaction(account.address(), payload);
+  const signedTxn = await client.signTransaction(account, txnRequest);
+  const transactionRes = await client.submitTransaction(signedTxn);
+  return await client.waitForTransaction(transactionRes.hash);
+};
+
+
+
