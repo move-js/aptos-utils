@@ -5,10 +5,9 @@ const clear = require('clear');
 const figlet = require('figlet');
 const path = require('path');
 const program = require('commander');
-import * as fs from 'fs';
 
+import * as fs from 'fs';
 import { deployMoonCoin, fundAccount, initializeCoin } from './txs';
-import { private_key, rest_url, faucet_url } from '../aptos.json';
 import { AptosAccount, AptosClient } from 'aptos';
 
 const REST_URL = 'https://fullnode.devnet.aptoslabs.com';
@@ -34,21 +33,21 @@ program.command('init')
   .description('Initial config file')
   .option('-N, --network <name>', 'Network')
   .action(async (str: { network: string }) => {
-    await fs.writeFileSync(`${process.cwd()}/aptos.json`, JSON.stringify({
+    await fs.writeFileSync(`${process.cwd()}/aptos-utils.json`, JSON.stringify({
       private_key: "",
       rest_url: "",
       faucet_url: ""
     }));
-    const sharedAddressPath = `${process.cwd()}/aptos.json`;
+    const acountPath = `${process.cwd()}/aptos-utils.json`;
     // @ts-ignore
-    const info = JSON.parse(await fs.readFileSync(sharedAddressPath));
+    const info = JSON.parse(await fs.readFileSync(acountPath));
 
     const account = new AptosAccount();
     const key = account.toPrivateKeyObject();
     info.private_key = key.privateKeyHex;
     info.rest_url = str.network === 'devnet' ? REST_URL : null;
     info.faucet_url = str.network === 'devnet' ? FAUCET_URL : null;
-    await fs.writeFileSync(sharedAddressPath, JSON.stringify(info, null, 2));
+    await fs.writeFileSync(acountPath, JSON.stringify(info, null, 2));
     console.log(`Initialized account. ☼☽`);
   });
 
@@ -62,15 +61,16 @@ program.command('create-coin')
   .option('-S, --symbol <symbol> ', 'Symbol of coin')
   .option('-D, --decimals <decimals> ', 'Decimals of coin')
   .action(async (str: { name?: string, symbol?: string, decimals?: string }) => {
+    const { private_key, rest_url, faucet_url } = require(`${process.cwd()}/aptos-utils.json`);
+
     const client = new AptosClient(rest_url || REST_URL);
     const privateKey = Uint8Array.from(
       (private_key
         .match(/.{1,2}/g) ?? [''])
-        .map((byte) => parseInt(byte, 16))
+        .map((byte: any) => parseInt(byte, 16))
     );
   
     const account = new AptosAccount(Uint8Array.from(privateKey));
-    console.log(account.address().toString());
 
     await fundAccount(account.address().toString(), rest_url || REST_URL, faucet_url || FAUCET_URL);
 
