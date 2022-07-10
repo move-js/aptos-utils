@@ -35,6 +35,7 @@ program.command('init')
   .action(async (str: { network: string }) => {
     await fs.writeFileSync(`${process.cwd()}/aptos-utils.json`, JSON.stringify({
       private_key: "",
+      address: "",
       rest_url: "",
       faucet_url: ""
     }));
@@ -45,6 +46,7 @@ program.command('init')
     const account = new AptosAccount();
     const key = account.toPrivateKeyObject();
     info.private_key = key.privateKeyHex;
+    info.address = account.address().toString();
     info.rest_url = str.network === 'devnet' ? REST_URL : null;
     info.faucet_url = str.network === 'devnet' ? FAUCET_URL : null;
     await fs.writeFileSync(acountPath, JSON.stringify(info, null, 2));
@@ -72,11 +74,17 @@ program.command('create-coin')
   
     const account = new AptosAccount(Uint8Array.from(privateKey));
 
+    console.log(`Funding account ${account.address().toString()}... ☼☽`);
     await fundAccount(account.address().toString(), rest_url || REST_URL, faucet_url || FAUCET_URL);
-
+    console.log(`Finished. ☼☽`);
+    
+    console.log(`Deploying MoonCoin ... ☼☽`);
     await deployMoonCoin(client, account);
+    console.log(`Finished. ☼☽`);
 
+    console.log(`Initializing Coin with AptosFramework::ManagedCoin::initialize ... ☼☽`);
     await initializeCoin(client, account, str.name || 'MoonCoin', str.symbol || 'MOON', str.decimals || '6');
+    console.log(`Finished. ☼☽`);
   });
 
 program.command('register')
@@ -94,9 +102,13 @@ program.command('register')
   
     const account = new AptosAccount(Uint8Array.from(privateKey));
 
+    console.log(`Funding account ... ☼☽`);
     await fundAccount(account.address().toString(), rest_url || REST_URL, faucet_url || FAUCET_URL);
-    await register(client, account, str.coinAddress)
+    console.log(`Finished. ☼☽`);
 
+    console.log(`Registering to receive coin with AptosFramework::ManagedCoin::register... ☼☽`);
+    await register(client, account, str.coinAddress)
+    console.log(`Finished. ☼☽`);
   });
 
 
@@ -117,9 +129,13 @@ program.command('mint-coin')
   
     const account = new AptosAccount(Uint8Array.from(privateKey));
 
+    console.log(`Funding account ... ☼☽`);
     await fundAccount(account.address().toString(), rest_url || REST_URL, faucet_url || FAUCET_URL);
-    await mint(client, account, str.coinAddress, str.receiverAddress, str.amount)
+    console.log(`Finished. ☼☽`);
 
+    console.log(`Minting coin with AptosFramework::ManagedCoin::mint... ☼☽`);
+    await mint(client, account, str.coinAddress, str.receiverAddress, str.amount)
+    console.log(`Finished. ☼☽`);
   });
 
 

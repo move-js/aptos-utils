@@ -35,12 +35,10 @@ export const initializeCoin = async (client: AptosClient, account: AptosAccount,
       false,
     ],
   };
-  console.log(payload);
   
   const txnRequest = await client.generateTransaction(account.address(), payload);
   const signedTxn = await client.signTransaction(account, txnRequest);
   const transactionRes = await client.submitTransaction(signedTxn);
-  console.log(transactionRes)
   return await client.waitForTransaction(transactionRes.hash);
 };
 
@@ -51,7 +49,6 @@ export const register = async (client: AptosClient, account: AptosAccount,  coin
     type_arguments: [`0x${coinAddress}::MoonCoin::MoonCoin`],
     arguments: [],
   };
-  console.log(payload);
   
   const txnRequest = await client.generateTransaction(account.address(), payload);
   const signedTxn = await client.signTransaction(account, txnRequest);
@@ -67,7 +64,6 @@ export const mint = async (client: AptosClient, account: AptosAccount,  coinAddr
     type_arguments: [`0x${coinAddress}::MoonCoin::MoonCoin`],
     arguments: [receiverAddress, amount.toString()],
   };
-  console.log(payload);
   
   const txnRequest = await client.generateTransaction(account.address(), payload);
   const signedTxn = await client.signTransaction(account, txnRequest);
