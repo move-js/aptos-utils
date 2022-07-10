@@ -1,6 +1,6 @@
 {
   "name": "@movejs/aptos-utils",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "CLI for aptos-utils",
   "license": "MIT",
   "author": "sondotpin",
