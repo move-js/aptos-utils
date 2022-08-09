@@ -20,7 +20,7 @@ export const deployMoonCoin = async (client: AptosClient, account: AptosAccount)
   const txnRequest = await client.generateTransaction(account.address(), payload);
   const signedTxn = await client.signTransaction(account, txnRequest);
   const transactionRes = await client.submitTransaction(signedTxn);
-  await client.waitForTransaction(transactionRes.hash);
+  // await client.waitForTransaction(transactionRes.hash);
 };
 
 export const initializeCoin = async (client: AptosClient, account: AptosAccount, name: string, symbol: string, decimals: string): Promise<void> => {
