@@ -8,7 +8,7 @@ const program = require('commander');
 
 import * as fs from 'fs';
 import { deployMoonCoin, fundAccount, initializeCoin, register, mint } from './txs';
-import { AptosAccount, AptosClient } from 'aptos';
+import { AptosAccount, AptosClient, HexString } from 'aptos';
 
 const REST_URL = 'https://fullnode.devnet.aptoslabs.com';
 const FAUCET_URL = 'https://faucet.devnet.aptoslabs.com';
@@ -134,7 +134,7 @@ program.command('mint-coin')
     console.log(`Finished. ☼☽`);
 
     console.log(`Minting coin with AptosFramework::ManagedCoin::mint... ☼☽`);
-    await mint(client, account, str.coinAddress, str.receiverAddress, str.amount)
+    await mint(client, account, str.coinAddress, new HexString(str.receiverAddress), str.amount)
     console.log(`Finished. ☼☽`);
   });
 
