@@ -7,19 +7,74 @@ export const fundAccount = async (address: string, nodeUrl: string, faucetUrl: s
   await faucetClient.fundAccount(address, 5000);
 };
 
+/** Publish a new module to the blockchain within the specified account */
+// export async function publishModule(accountFrom: AptosAccount, moduleHex: string): Promise<string> {
+//   const moudleBundlePayload = new TxnBuilderTypes.TransactionPayloadModuleBundle(
+//     new TxnBuilderTypes.ModuleBundle([new TxnBuilderTypes.Module(new HexString(moduleHex).toUint8Array())]),
+//   );
+
+//   const [{ sequence_number: sequenceNumber }, chainId] = await Promise.all([
+//     client.getAccount(accountFrom.address()),
+//     client.getChainId(),
+//   ]);
+
+//   const rawTxn = new TxnBuilderTypes.RawTransaction(
+//     TxnBuilderTypes.AccountAddress.fromHex(accountFrom.address()),
+//     BigInt(sequenceNumber),
+//     moudleBundlePayload,
+//     1000n,
+//     1n,
+//     BigInt(Math.floor(Date.now() / 1000) + 10),
+//     new TxnBuilderTypes.ChainId(chainId),
+//   );
+
+//   const bcsTxn = AptosClient.generateBCSTransaction(accountFrom, rawTxn);
+//   const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);
+
+//   return transactionRes.hash;
+// }
+
 export const deployMoonCoin = async (client: AptosClient, account: AptosAccount) => {
-  const payload: Types.TransactionPayload = {
-    type: 'module_bundle_payload',
-    modules: [{ bytecode:
-      '0x' +
-      'a11ceb0b0500000005010002020204070615081b200a3b05000000000000084d6f6f6e436f696e0b64756d6d795f6669656c64' +
-      account.address().toString().slice(-64) +
-      '000201010100'
-    }],
-  };
-  const txnRequest = await client.generateTransaction(account.address(), payload);
-  const signedTxn = await client.signTransaction(account, txnRequest);
-  const transactionRes = await client.submitTransaction(signedTxn);
+  const moduleHex = '0x' +
+    'a11ceb0b0500000005010002020204070615081b200a3b05000000000000084d6f6f6f6e436f696e0b64756d6d795f6669656c64' +
+    account.address().toString().slice(-64) +
+    '000201010100'
+  const moudleBundlePayload = new TxnBuilderTypes.TransactionPayloadModuleBundle(
+    new TxnBuilderTypes.ModuleBundle([new TxnBuilderTypes.Module(new HexString(moduleHex).toUint8Array())]),
+  );
+
+  const [{ sequence_number: sequenceNumber }, chainId] = await Promise.all([
+    client.getAccount(account.address()),
+    client.getChainId(),
+  ]);
+
+  const rawTxn = new TxnBuilderTypes.RawTransaction(
+    TxnBuilderTypes.AccountAddress.fromHex(account.address()),
+    BigInt(sequenceNumber),
+    moudleBundlePayload,
+    BigInt(1000),
+    BigInt(1),
+    BigInt(Math.floor(Date.now() / 1000) + 10),
+    new TxnBuilderTypes.ChainId(chainId),
+  );
+
+  const bcsTxn = AptosClient.generateBCSTransaction(account, rawTxn);
+  const transactionRes = await client.submitSignedBCSTransaction(bcsTxn);
+
+  return transactionRes.hash;
+
+  // const payload: Types.TransactionPayload = {
+  //   type: 'module_bundle_payload',
+  //   modules: [{ bytecode:
+  //     '0x' +
+  //     'a11ceb0b0500000005010002020204070615081b200a3b05000000000000084d6f6f6e436f696e0b64756d6d795f6669656c64' +
+  //     account.address().toString().slice(-64) +
+  //     '000201010100'
+  //   }],
+  // };
+  // const txnRequest = await client.generateTransaction(account.address(), payload);
+  // const signedTxn = await client.signTransaction(account, txnRequest);
+  // const transactionRes = await client.submitTransaction(signedTxn);
   // await client.waitForTransaction(transactionRes.hash);
 };
 

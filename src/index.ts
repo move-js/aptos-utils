@@ -47,8 +47,8 @@ program.command('init')
     const key = account.toPrivateKeyObject();
     info.private_key = key.privateKeyHex;
     info.address = account.address().toString();
-    info.rest_url = str.network === 'devnet' ? REST_URL : null;
-    info.faucet_url = str.network === 'devnet' ? FAUCET_URL : null;
+    info.rest_url = (str.network && str.network !== 'devnet') ? null : REST_URL;
+    info.faucet_url = (str.network && str.network !== 'devnet') ? null : FAUCET_URL;
     await fs.writeFileSync(acountPath, JSON.stringify(info, null, 2));
     console.log(`Initialized account. ☼☽`);
   });
@@ -86,6 +86,33 @@ program.command('create-coin')
     await initializeCoin(client, account, str.name || 'MoonCoin', str.symbol || 'MOON', str.decimals || '6');
     console.log(`Finished. ☼☽`);
   });
+
+/**
+ * Coin command
+ */
+
+ program.command('deploy-moon')
+ .description('Deploy MoonCoin')
+ .action(async () => {
+   const { private_key, rest_url, faucet_url } = require(`${process.cwd()}/aptos-utils.json`);
+
+   const client = new AptosClient(rest_url || REST_URL);
+   const privateKey = Uint8Array.from(
+     (private_key
+       .match(/.{1,2}/g) ?? [''])
+       .map((byte: any) => parseInt(byte, 16))
+   );
+ 
+   const account = new AptosAccount(Uint8Array.from(privateKey));
+
+  //  console.log(`Funding account ${account.address().toString()}... ☼☽`);
+  //  await fundAccount(account.address().toString(), rest_url || REST_URL, faucet_url || FAUCET_URL);
+  //  console.log(`Finished. ☼☽`);
+   
+   console.log(`Deploying MoonCoin ... ☼☽`);
+   await deployMoonCoin(client, account);
+   console.log(`Finished. ☼☽`);
+ });
 
 program.command('register')
   .description('Register to receive new coin')
